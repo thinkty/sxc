@@ -1,6 +1,5 @@
 # Build Directories
-bin/
-obj/
+bulid/
 
 # Prerequisites
 *.d
