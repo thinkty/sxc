@@ -1,7 +1,15 @@
-#include "main.hpp"
+#include <sxc/client.hpp>
+#include <sxc/server.hpp>
 
 #include <iostream>
 #include <cstring>
+
+#define FLAG_CLIENT "-c"
+#define FLAG_SERVER "-s"
+#define FLAG_HELP		"-h"
+#define HELP_MSG		"A simple XMPP chat application.\n\nOptions\n\t-c\tstart application as client\n\t-s\tstart application as server\n\t-h\tdisplay this help and exit"
+
+void print_usage(char * name);
 
 /**
  * Entry point of the application. Validate the arguments and start the appropr-
@@ -32,6 +40,11 @@ int main(int argc, char * argv[])
 	}
 }
 
+/**
+ * Print application usage
+ *
+ * @param	name	Name of the program (= argv[0])
+ */
 void print_usage(char * name)
 {
 	std::cerr << "Usage: " << name << " [OPTION]\n" << HELP_MSG << std::endl;

@@ -1,0 +1,15 @@
+add_executable(app app.cpp)
+target_compile_features(app PRIVATE cxx_std_17)
+
+target_link_libraries(app PRIVATE sxc_lib)
+
+if (WIN32)
+else()
+	target_compile_options(app PRIVATE "-Wall")
+	target_compile_options(app PRIVATE "-Wextra")
+	target_compile_options(app PRIVATE "-pedantic")
+	target_compile_options(app PRIVATE "-Werror")
+	target_compile_options(app PRIVATE "-Wmissing-declarations")
+	target_compile_options(app PRIVATE "-Wdeprecated")
+	target_compile_options(app PRIVATE "-Wshadow")
+endif()

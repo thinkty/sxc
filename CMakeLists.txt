@@ -5,32 +5,24 @@ project(sxc
 	VERSION 1.0
 )
 
-add_library(client SHARED
-	src/client.cpp
+# Import FTXUI (TUI lib)
+include(FetchContent)
+ 
+set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
+FetchContent_Declare(ftxui
+  GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
+  GIT_TAG ba5826eab71461f5c4b8254d5efbcee74134af97
 )
 
-add_library(server SHARED
-	src/server.cpp
-)
-
-# target_link_libraries(lib)
-target_include_directories(client PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
-target_include_directories(server PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
-
-add_executable(sxc src/main.cpp)
-target_link_libraries(sxc client server)
-
-# FTXUI requires C++17
-set_target_properties(sxc PROPERTIES CXX_STANDARD 17)
-
-if (WIN32)
-else()
-	target_compile_options(sxc PRIVATE "-Wall")
-	target_compile_options(sxc PRIVATE "-Wextra")
-	target_compile_options(sxc PRIVATE "-pedantic")
-	target_compile_options(sxc PRIVATE "-Werror")
-	target_compile_options(sxc PRIVATE "-Wmissing-declarations")
-	target_compile_options(sxc PRIVATE "-Wdeprecated")
-	target_compile_options(sxc PRIVATE "-Wshadow")
+FetchContent_GetProperties(ftxui)
+if(NOT ftxui_POPULATED)
+  FetchContent_Populate(ftxui)
+  add_subdirectory(${ftxui_SOURCE_DIR} ${ftxui_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
+# End Import
 
+# Compiled library code
+add_subdirectory(src)
+
+# Executable code
+add_subdirectory(apps)
