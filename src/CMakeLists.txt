@@ -9,9 +9,9 @@ add_library(sxc_lib STATIC
 target_include_directories(sxc_lib PUBLIC ../include)
 
 target_link_libraries(sxc_lib
-	PRIVATE ftxui::screen
-	PRIVATE ftxui::dom
-	PRIVATE ftxui::component
+	PUBLIC ftxui::screen
+	PUBLIC ftxui::dom
+	PUBLIC ftxui::component
 )
 
 set_target_properties(sxc_lib PROPERTIES CXX_STANDARD 17)
