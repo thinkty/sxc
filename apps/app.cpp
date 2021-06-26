@@ -32,6 +32,7 @@ int main(int argc, char * argv[])
 	else if (strcmp(argv[1], FLAG_SERVER) == 0)
 	{
 		// Start server
+		Server();
 	}
 	else
 	{
