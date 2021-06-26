@@ -28,6 +28,21 @@ void TUI::Init()
 		}
 	);
 
+	// Add callback on enter pressed
+	ftxui::InputBase::From(input)->on_enter = [&]
+	{
+		Print(m_input);
+		m_input->clear();
+		// TODO: get a pointer to a function call from the argument to call
+	};
+
 	auto screen = ftxui::ScreenInteractive::Fullscreen();
 	screen.Loop(renderer);
+}
+
+/**
+ * Print a given message to the display panel
+ */
+void TUI::Print(std::wstring * message)
+{
 }
