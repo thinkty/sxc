@@ -13,12 +13,16 @@ void tui::init()
 {
 	ftxui::Component input = ftxui::Input(m_input, "");
 
-	// On enter pressed, print to content area and clear input
+	// On enter pressed
 	ftxui::InputBase::From(input)->on_enter = [&]
 	{
-		print(m_input);
-		m_input->clear();
-		// TODO: get a pointer to a function call from the argument to call
+		if (!m_input->empty())
+		{
+			print(m_input);
+			m_input->clear();
+
+			// TODO: get a pointer to a function call from the argument to call
+		}
 	};
 
 	// UI elements
@@ -39,7 +43,7 @@ void tui::init()
 					ftxui::separator(),
 					ftxui::hbox(
 						{
-							ftxui::text(L"> "),
+							ftxui::text(L" > "),
 							input->Render(),
 						}
 					),
