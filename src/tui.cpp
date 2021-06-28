@@ -2,6 +2,7 @@
 
 tui::tui(std::wstring * input)
 	: m_input{input}
+	, m_content{ftxui::text(L"Initializing UI...")}
 {
 }
 
@@ -20,17 +21,26 @@ void tui::init()
 		// TODO: get a pointer to a function call from the argument to call
 	};
 
-
 	// UI elements
 	auto renderer = ftxui::Renderer(input, [&]
 		{
 			return ftxui::vbox(
 				{
-					ftxui::text(L"Example...") | ftxui::flex,
+					ftxui::vbox(
+						{
+							ftxui::vbox(
+								{
+									m_content,
+								}
+							),
+							ftxui::text(L" ") | ftxui::select,
+						}
+					) | ftxui::frame | ftxui::flex,
 					ftxui::separator(),
 					ftxui::hbox(
 						{
-							ftxui::text(L"> "), input->Render()
+							ftxui::text(L"> "),
+							input->Render(),
 						}
 					),
 				}
@@ -47,4 +57,5 @@ void tui::init()
  */
 void tui::print(std::wstring * message)
 {
+	m_content.push_back(ftxui::text(*message));
 }

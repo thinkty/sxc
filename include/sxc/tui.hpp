@@ -14,6 +14,7 @@ class tui
 {
 private:
 	std::wstring * m_input;
+	ftxui::Elements m_content;
 
 public:
 	tui(std::wstring * input);
