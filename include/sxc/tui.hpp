@@ -10,15 +10,15 @@
 
 #include <string>
 
-class TUI
+class tui
 {
 private:
 	std::wstring * m_input;
 
 public:
-	TUI(std::wstring * input);
-	void Init();
-	void Print(std::wstring * message);
+	tui(std::wstring * input);
+	void init();
+	void print(std::wstring * message);
 };
 
 #endif

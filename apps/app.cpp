@@ -27,12 +27,12 @@ int main(int argc, char * argv[])
 	if (strcmp(argv[1], FLAG_CLIENT) == 0)
 	{
 		// Start client
-		Client();
+		client();
 	}
 	else if (strcmp(argv[1], FLAG_SERVER) == 0)
 	{
 		// Start server
-		Server();
+		server();
 	}
 	else
 	{

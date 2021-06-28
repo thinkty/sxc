@@ -3,12 +3,11 @@
 /**
  * Initialize the TUI and read for user input
  */
-Client::Client()
+client::client()
 	: m_cmd{}
 	, m_ui{&m_cmd}
 {
-	m_ui.Init();
+	m_ui.init();
 
-	// TODO: read from the user input and parse on enter press
 }
 

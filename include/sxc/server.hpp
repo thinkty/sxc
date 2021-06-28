@@ -5,14 +5,14 @@
 
 #include <string>
 
-class Server
+class server
 {
 private:
 	std::wstring m_cmd;
-	TUI m_ui;
+	tui m_ui;
 
 public:
-	Server();
+	server();
 };
 
 #endif

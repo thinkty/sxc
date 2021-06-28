@@ -3,10 +3,10 @@
 /**
  * Initialize the TUI and parse user input
  */
-Server::Server()
+server::server()
 	: m_cmd{}
 	, m_ui{&m_cmd}
 {
-	m_ui.Init();
+	m_ui.init();
 }
 
