@@ -8,22 +8,13 @@ tui::tui(std::wstring * input)
 
 /**
  * Initialize the interactive components of the renderer and display it
+ *
+ * @param cb_on_enter Function object to trigger on enter pressed
  */
-void tui::init()
+void tui::init(std::function<void()> cb_on_enter)
 {
 	ftxui::Component input = ftxui::Input(m_input, "");
-
-	// On enter pressed
-	ftxui::InputBase::From(input)->on_enter = [&]
-	{
-		if (!m_input->empty())
-		{
-			print(m_input);
-			m_input->clear();
-
-			// TODO: get a pointer to a function call from the argument to call
-		}
-	};
+	ftxui::InputBase::From(input)->on_enter = cb_on_enter;
 
 	// UI elements
 	auto renderer = ftxui::Renderer(input, [&]
@@ -62,4 +53,20 @@ void tui::init()
 void tui::print(std::wstring * message)
 {
 	m_content.push_back(ftxui::text(*message));
+}
+
+/**
+ * Clear input
+ */
+void tui::clear_input()
+{
+	m_input->clear();
+}
+
+/**
+ * Clear display panel that contains content
+ */
+void tui::clear_content()
+{
+	m_content.clear();
 }

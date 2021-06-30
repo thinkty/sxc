@@ -9,6 +9,7 @@
 #include <ftxui/dom/elements.hpp>
 
 #include <string>
+#include <functional>
 
 class tui
 {
@@ -18,8 +19,10 @@ private:
 
 public:
 	tui(std::wstring * input);
-	void init();
+	void init(std::function<void()> cb_on_enter);
 	void print(std::wstring * message);
+	void clear_input();
+	void clear_content();
 };
 
 #endif
