@@ -2,7 +2,7 @@
 
 TUI::TUI(std::wstring * input)
 	: m_input{input}
-	, m_container{ftxui::text(L"Initializing UI...")}
+	, m_container{ftxui::Container::Vertical({})}
 {
 }
 
@@ -25,12 +25,11 @@ void TUI::Init(std::function<void()> cb_on_enter)
 						{
 							ftxui::vbox(
 								{
-									m_container,
+									m_container->Render(),
 								}
 							),
-							ftxui::text(L" ") | ftxui::select,
 						}
-					) | ftxui::frame | ftxui::flex,
+					) | ftxui::flex,
 					ftxui::separator(),
 					ftxui::hbox(
 						{
@@ -52,7 +51,7 @@ void TUI::Init(std::function<void()> cb_on_enter)
  */
 void TUI::Print(std::wstring * message)
 {
-	m_container.push_back(ftxui::text(*message));
+	m_container->Add(ftxui::Make<Focusable>(*message));
 }
 
 /**
@@ -68,5 +67,6 @@ void TUI::ClearInput()
  */
 void TUI::ClearContainer()
 {
-	m_container.clear();
+	m_container->~ComponentBase();
+	m_container = ftxui::Container::Vertical({});
 }

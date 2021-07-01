@@ -1,6 +1,8 @@
 #ifndef TUI_HH
 #define TUI_HH
 
+#include <sxc/focusable.hpp>
+
 #include <ftxui/component/captured_mouse.hpp>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
@@ -15,7 +17,8 @@ class TUI
 {
 private:
 	std::wstring * m_input;
-	ftxui::Elements m_container;
+	// ftxui::Elements m_container;
+	ftxui::Component m_container;
 
 public:
 	TUI(std::wstring * input);
