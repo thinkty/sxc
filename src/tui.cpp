@@ -23,11 +23,7 @@ void TUI::Init(std::function<void()> cb_on_enter)
 				{
 					ftxui::vbox(
 						{
-							ftxui::vbox(
-								{
-									m_container->Render(),
-								}
-							),
+							m_container->Render(),
 						}
 					) | ftxui::flex,
 					ftxui::separator(),
@@ -49,9 +45,9 @@ void TUI::Init(std::function<void()> cb_on_enter)
 /**
  * Print a given message to the display panel
  */
-void TUI::Print(std::wstring * message)
+void TUI::Print(const std::wstring message)
 {
-	m_container->Add(ftxui::Make<Focusable>(*message));
+	m_container->Add(ftxui::Make<Focusable>(message));
 }
 
 /**

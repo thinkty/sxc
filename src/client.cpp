@@ -10,7 +10,7 @@ Client::Client()
 	m_ui.Init([this]()
 		{
 			// TODO: Handle input
-			m_ui.Print(&m_cmd);
+			m_ui.Print(m_cmd);
 			m_ui.ClearInput();
 		}
 	);
