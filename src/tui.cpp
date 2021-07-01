@@ -1,8 +1,8 @@
 #include <sxc/tui.hpp>
 
-tui::tui(std::wstring * input)
+TUI::TUI(std::wstring * input)
 	: m_input{input}
-	, m_content{ftxui::text(L"Initializing UI...")}
+	, m_container{ftxui::text(L"Initializing UI...")}
 {
 }
 
@@ -11,7 +11,7 @@ tui::tui(std::wstring * input)
  *
  * @param cb_on_enter Function object to trigger on enter pressed
  */
-void tui::init(std::function<void()> cb_on_enter)
+void TUI::Init(std::function<void()> cb_on_enter)
 {
 	ftxui::Component input = ftxui::Input(m_input, "");
 	ftxui::InputBase::From(input)->on_enter = cb_on_enter;
@@ -25,7 +25,7 @@ void tui::init(std::function<void()> cb_on_enter)
 						{
 							ftxui::vbox(
 								{
-									m_content,
+									m_container,
 								}
 							),
 							ftxui::text(L" ") | ftxui::select,
@@ -50,15 +50,15 @@ void tui::init(std::function<void()> cb_on_enter)
 /**
  * Print a given message to the display panel
  */
-void tui::print(std::wstring * message)
+void TUI::Print(std::wstring * message)
 {
-	m_content.push_back(ftxui::text(*message));
+	m_container.push_back(ftxui::text(*message));
 }
 
 /**
  * Clear input
  */
-void tui::clear_input()
+void TUI::ClearInput()
 {
 	m_input->clear();
 }
@@ -66,7 +66,7 @@ void tui::clear_input()
 /**
  * Clear display panel that contains content
  */
-void tui::clear_content()
+void TUI::ClearContainer()
 {
-	m_content.clear();
+	m_container.clear();
 }

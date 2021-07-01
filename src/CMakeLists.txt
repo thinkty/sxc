@@ -4,6 +4,7 @@ add_library(sxc_lib STATIC
 	client.cpp
 	server.cpp
 	tui.cpp
+	focusable.cpp
 	${HEADER_LIST}
 )
 

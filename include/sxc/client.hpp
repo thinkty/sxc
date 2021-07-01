@@ -5,14 +5,14 @@
 
 #include <string>
 
-class client
+class Client
 {
 private:
 	std::wstring m_cmd;
-	tui m_ui;
+	TUI m_ui;
 
 public:
-	client();
+	Client();
 };
 
 #endif

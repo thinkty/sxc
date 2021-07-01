@@ -3,14 +3,14 @@
 /**
  * Initialize the TUI and parse user input
  */
-server::server()
+Server::Server()
 	: m_cmd{}
 	, m_ui{&m_cmd}
 {
-	m_ui.init([this] ()
+	m_ui.Init([this] ()
 		{
 			// TODO: Handle input
-			m_ui.print(&m_cmd);
+			m_ui.Print(&m_cmd);
 		}
 	);
 }

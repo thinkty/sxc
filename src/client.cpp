@@ -3,15 +3,15 @@
 /**
  * Initialize the TUI and read for user input
  */
-client::client()
+Client::Client()
 	: m_cmd{}
 	, m_ui{&m_cmd}
 {
-	m_ui.init([this]()
+	m_ui.Init([this]()
 		{
 			// TODO: Handle input
-			m_ui.print(&m_cmd);
-			m_ui.clear_input();
+			m_ui.Print(&m_cmd);
+			m_ui.ClearInput();
 		}
 	);
 

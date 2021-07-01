@@ -11,18 +11,18 @@
 #include <string>
 #include <functional>
 
-class tui
+class TUI
 {
 private:
 	std::wstring * m_input;
-	ftxui::Elements m_content;
+	ftxui::Elements m_container;
 
 public:
-	tui(std::wstring * input);
-	void init(std::function<void()> cb_on_enter);
-	void print(std::wstring * message);
-	void clear_input();
-	void clear_content();
+	TUI(std::wstring * input);
+	void Init(std::function<void()> cb_on_enter);
+	void Print(std::wstring * message);
+	void ClearInput();
+	void ClearContainer();
 };
 
 #endif
