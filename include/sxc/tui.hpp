@@ -22,7 +22,7 @@ private:
 
 public:
 	TUI(std::wstring * input);
-	void Init(std::function<void()> cb_on_enter);
+	void Init(std::function<void()>, std::function<void()>, std::function<void()>);
 	void Print(const std::wstring message);
 	void ClearInput();
 	void ClearContainer();

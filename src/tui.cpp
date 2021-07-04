@@ -9,12 +9,20 @@ TUI::TUI(std::wstring * input)
 /**
  * Initialize the interactive components of the renderer and display it
  *
- * @param cb_on_enter Function object to trigger on enter pressed
+ * @param on_enter			Function object to be called on enter pressed
+ * @param on_arrow_up		Function object to be called on arrow up pressed
+ * @param on_arrow_down	Function object to be called on arrow down pressed
  */
-void TUI::Init(std::function<void()> cb_on_enter)
+void TUI::Init(
+	std::function<void()> on_enter,
+	std::function<void()> on_arrow_up,
+	std::function<void()> on_arrow_down
+)
 {
 	ftxui::Component input = ftxui::Make<CustomInput>(m_input);
-	CustomInput::From(input)->on_enter = cb_on_enter;
+	CustomInput::From(input)->on_enter = on_enter;
+	CustomInput::From(input)->on_arrow_up = on_arrow_up;
+	CustomInput::From(input)->on_arrow_down = on_arrow_down;
 
 	// UI elements
 	auto renderer = ftxui::Renderer(input, [&]
