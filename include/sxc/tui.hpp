@@ -19,6 +19,8 @@ private:
 	std::wstring * m_input;
 	// ftxui::Elements m_container;
 	ftxui::Component m_container;
+	int m_msg_count;
+	int m_index;
 
 public:
 	TUI(std::wstring * input);
@@ -26,6 +28,7 @@ public:
 	void Print(const std::wstring message);
 	void ScrollUp();
 	void ScrollDown();
+	void ScrollToBottom();
 	void ClearInput();
 	void ClearContainer();
 };

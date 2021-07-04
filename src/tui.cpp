@@ -3,6 +3,8 @@
 TUI::TUI(std::wstring * input)
 	: m_input{input}
 	, m_container{ftxui::Container::Vertical({})}
+	, m_msg_count{0}
+	, m_index{-1}
 {
 }
 
@@ -33,7 +35,7 @@ void TUI::Init(
 						{
 							m_container->Render(),
 						}
-					) | ftxui::flex,
+					) | ftxui::flex | ftxui::frame,
 					ftxui::separator(),
 					ftxui::hbox(
 						{
@@ -56,6 +58,19 @@ void TUI::Init(
 void TUI::Print(const std::wstring message)
 {
 	m_container->Add(ftxui::Make<Focusable>(message));
+
+	if (m_index == m_msg_count - 1)
+	{
+		// If already at bottom, scroll to down
+		ScrollDown();
+		m_index++;
+	}
+	else
+	{
+		// TODO: Let the user be notified of a new message
+	}
+
+	m_msg_count++;
 }
 
 /**
@@ -63,7 +78,11 @@ void TUI::Print(const std::wstring message)
  */
 void TUI::ScrollUp()
 {
-	// TODO: trigger container scroll up event
+	m_container->OnEvent(ftxui::Event::ArrowUp);
+	if (m_index > -1)
+	{
+		m_index--;
+	}
 }
 
 /**
@@ -71,7 +90,21 @@ void TUI::ScrollUp()
  */
 void TUI::ScrollDown()
 {
-	// TODO: trigger container scroll down event
+	m_container->OnEvent(ftxui::Event::ArrowDown);
+	if (m_index < m_msg_count - 1)
+	{
+		m_index++;
+	}
+}
+
+/**
+ * Scroll all the way to the bottom
+ */
+void TUI::ScrollToBottom()
+{
+	// TODO: 
+
+	m_index = m_msg_count - 1;
 }
 
 /**
