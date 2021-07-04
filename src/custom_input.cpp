@@ -98,24 +98,42 @@ bool CustomInput::OnEvent(ftxui::Event event)
     return false;
   }
 
+  // Arrow Left.
   if (event == ftxui::Event::ArrowLeft && m_cursor_position > 0)
   {
     m_cursor_position--;
     return true;
   }
 
+  // Arrow Right.
   if (event == ftxui::Event::ArrowRight && m_cursor_position < (int) m_content->size())
   {
     m_cursor_position++;
     return true;
   }
 
+  // Arrow Up.
+  if (event == ftxui::Event::ArrowUp)
+  {
+    on_arrow_up();
+    return true;
+  }
+
+  // Arrow Down.
+  if (event == ftxui::Event::ArrowDown)
+  {
+    on_arrow_down();
+    return true;
+  }
+
+  // Home.
   if (event == ftxui::Event::Home)
   {
     m_cursor_position = 0;
     return true;
   }
 
+  // End.
   if (event == ftxui::Event::End)
   {
     m_cursor_position = (int) m_content->size();

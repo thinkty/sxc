@@ -32,6 +32,8 @@ public:
   int m_cursor_position = 0;
   std::function<void()> on_change = [] {};
   std::function<void()> on_enter = [] {};
+  std::function<void()> on_arrow_up = [] {};
+  std::function<void()> on_arrow_down = [] {};
 
   static CustomInput * From(ftxui::Component component);
 
