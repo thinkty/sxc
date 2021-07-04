@@ -5,14 +5,14 @@ Focusable::Focusable(std::wstring content)
 {
 }
 
+/**
+ * Simply invert the color of the text when focused
+ */
 ftxui::Element Focusable::Render()
 {
   if (Focused())
   {
     return ftxui::text(m_content) | ftxui::inverted | ftxui::focus;
   }
-  else
-  {
-    return ftxui::text(m_content);
-  }
+  return ftxui::text(m_content);
 }
