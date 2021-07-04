@@ -59,6 +59,22 @@ void TUI::Print(const std::wstring message)
 }
 
 /**
+ * Scroll up in the container
+ */
+void TUI::ScrollUp()
+{
+	// TODO: trigger container scroll up event
+}
+
+/**
+ * Scroll down in the container
+ */
+void TUI::ScrollDown()
+{
+	// TODO: trigger container scroll down event
+}
+
+/**
  * Clear input
  */
 void TUI::ClearInput()

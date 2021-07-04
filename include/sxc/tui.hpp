@@ -24,6 +24,8 @@ public:
 	TUI(std::wstring * input);
 	void Init(std::function<void()>, std::function<void()>, std::function<void()>);
 	void Print(const std::wstring message);
+	void ScrollUp();
+	void ScrollDown();
 	void ClearInput();
 	void ClearContainer();
 };
