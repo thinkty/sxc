@@ -13,8 +13,8 @@ TUI::TUI(std::wstring * input)
  */
 void TUI::Init(std::function<void()> cb_on_enter)
 {
-	ftxui::Component input = ftxui::Input(m_input, "");
-	ftxui::InputBase::From(input)->on_enter = cb_on_enter;
+	ftxui::Component input = ftxui::Make<CustomInput>(m_input);
+	CustomInput::From(input)->on_enter = cb_on_enter;
 
 	// UI elements
 	auto renderer = ftxui::Renderer(input, [&]

@@ -5,6 +5,7 @@ add_library(sxc_lib STATIC
 	server.cpp
 	tui.cpp
 	focusable.cpp
+	custom_input.cpp
 	${HEADER_LIST}
 )
 

@@ -2,12 +2,12 @@
 #define TUI_HH
 
 #include <sxc/focusable.hpp>
+#include <sxc/custom_input.hpp>
 
 #include <ftxui/component/captured_mouse.hpp>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/screen_interactive.hpp>
-#include <ftxui/component/input.hpp>
 #include <ftxui/dom/elements.hpp>
 
 #include <string>
