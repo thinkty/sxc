@@ -65,10 +65,6 @@ void TUI::Print(const std::wstring message)
 		ScrollDown();
 		m_index++;
 	}
-	else
-	{
-		// TODO: Let the user be notified of a new message
-	}
 
 	m_msg_count++;
 }
@@ -95,16 +91,6 @@ void TUI::ScrollDown()
 	{
 		m_index++;
 	}
-}
-
-/**
- * Scroll all the way to the bottom
- */
-void TUI::ScrollToBottom()
-{
-	// TODO: 
-
-	m_index = m_msg_count - 1;
 }
 
 /**

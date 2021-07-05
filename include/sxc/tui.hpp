@@ -28,7 +28,6 @@ public:
 	void Print(const std::wstring message);
 	void ScrollUp();
 	void ScrollDown();
-	void ScrollToBottom();
 	void ClearInput();
 	void ClearContainer();
 };
