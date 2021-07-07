@@ -4,6 +4,13 @@ build/
 # VSCode settings
 .vscode/
 
+# SSL Certs
+*.crt
+*.key
+*.csr
+*.srl
+*.pem
+
 # Prerequisites
 *.d
 
