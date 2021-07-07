@@ -21,6 +21,14 @@ if(NOT ftxui_POPULATED)
 endif()
 # End Import
 
+# Import OpenSSL (SSL lib)
+find_package(OpenSSL REQUIRED)
+# End Import
+
+# Import Asio (Networking lib)
+find_package(Boost REQUIRED COMPONENTS system)
+# End Import
+
 # Compiled library code
 add_subdirectory(src)
 

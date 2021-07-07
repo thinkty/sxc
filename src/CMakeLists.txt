@@ -6,15 +6,20 @@ add_library(sxc_lib STATIC
 	tui.cpp
 	focusable.cpp
 	custom_input.cpp
+	tls.cpp
 	${HEADER_LIST}
 )
 
-target_include_directories(sxc_lib PUBLIC ../include)
+target_include_directories(sxc_lib
+	PUBLIC ../include
+)
 
 target_link_libraries(sxc_lib
 	PUBLIC ftxui::screen
 	PUBLIC ftxui::dom
 	PUBLIC ftxui::component
+	PUBLIC OpenSSL::SSL
+	PUBLIC Boost::system
 )
 
 set_target_properties(sxc_lib PROPERTIES CXX_STANDARD 17)
