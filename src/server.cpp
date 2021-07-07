@@ -1,7 +1,7 @@
 #include <sxc/server.hpp>
 
 /**
- * Initialize the TUI and parse user input
+ * @brief Initialize the TUI and the TCP server
  */
 Server::Server()
 	: m_cmd{}
@@ -27,4 +27,3 @@ Server::Server()
 	m_ui.Init(on_enter, on_arrow_up, on_arrow_down);
 
 }
-

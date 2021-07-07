@@ -2,7 +2,7 @@
 #define SERVER_H
 
 #include "tui.hpp"
-
+#include "tls.hpp"
 #include <string>
 
 class Server
