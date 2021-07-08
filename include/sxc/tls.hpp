@@ -3,6 +3,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
+#include <boost/system/error_code.hpp>
 #include <string>
 #include <functional>
 
@@ -13,12 +14,15 @@ typedef boost::asio::ssl::stream<tcp_t::socket> ssl_stream_t;
 typedef boost::asio::ssl::stream_base stream_base_t;
 typedef boost::asio::ssl::context context_t;
 typedef boost::asio::io_context io_context_t;
+typedef boost::system::error_code ec_t;
+typedef std::function<void()> callback_t;
 
 class TLSSession : public std::enable_shared_from_this<TLSSession>
 {
 private:
   ssl_stream_t m_socket;
   char m_data[1024];
+  callback_t m_callback;
 
   void Handshake();
   void Read();
@@ -27,6 +31,7 @@ private:
 public:
   TLSSession(ssl_stream_t socket);
   void Start();
+  void SetCallBack(callback_t callback);
 };
 
 /**
