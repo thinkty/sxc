@@ -14,17 +14,7 @@ Client::Client()
 		m_ui.ClearInput();
 	};
 
-	auto on_arrow_up = [this]()
-	{
-		m_ui.ScrollUp();
-	};
-
-	auto on_arrow_down = [this]()
-	{
-		m_ui.ScrollDown();
-	};
-
-	m_ui.Init(on_enter, on_arrow_up, on_arrow_down);
+	m_ui.Init(on_enter);
 
 }
 

@@ -22,9 +22,15 @@ private:
 	int m_msg_count;
 	int m_index;
 
+	void RenderUI(ftxui::Component& input);
+
 public:
 	TUI(std::wstring * input);
-	void Init(std::function<void()>, std::function<void()>, std::function<void()>);
+	void Init(
+		std::function<void()> on_enter,
+		std::function<void()> on_arrow_up = NULL,
+		std::function<void()> on_arrow_down = NULL
+	);
 	void Print(const std::wstring message);
 	void ScrollUp();
 	void ScrollDown();

@@ -11,9 +11,9 @@ TUI::TUI(std::wstring * input)
 /**
  * Initialize the interactive components of the renderer and display it
  *
- * @param on_enter			Function object to be called on enter pressed
- * @param on_arrow_up		Function object to be called on arrow up pressed
- * @param on_arrow_down	Function object to be called on arrow down pressed
+ * @param on_enter			Callback on enter pressed
+ * @param on_arrow_up		Callback on arrow up pressed
+ * @param on_arrow_down	Callback on arrow down pressed
  */
 void TUI::Init(
 	std::function<void()> on_enter,
@@ -23,9 +23,41 @@ void TUI::Init(
 {
 	ftxui::Component input = ftxui::Make<CustomInput>(m_input);
 	CustomInput::From(input)->on_enter = on_enter;
-	CustomInput::From(input)->on_arrow_up = on_arrow_up;
-	CustomInput::From(input)->on_arrow_down = on_arrow_down;
 
+	if (on_arrow_up)
+	{
+		CustomInput::From(input)->on_arrow_up = on_arrow_up;
+	}
+	else
+	{
+		CustomInput::From(input)->on_arrow_up = [this]()
+		{
+			ScrollUp();
+		};
+	}
+
+	if (on_arrow_down)
+	{
+		CustomInput::From(input)->on_arrow_down = on_arrow_down;
+	}
+	else
+	{
+		CustomInput::From(input)->on_arrow_down = [this]()
+		{
+			ScrollDown();
+		};
+	}
+
+	RenderUI(input);
+}
+
+/**
+ * @brief Draw out the UI aspects of the application. The events are handled at
+ * RegisterEventHandlers()
+ * @param input Reference to the input component
+ */
+void TUI::RenderUI(ftxui::Component& input)
+{
 	// UI elements
 	auto renderer = ftxui::Renderer(input, [&]
 		{
