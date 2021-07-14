@@ -85,8 +85,7 @@ TLSServer::TLSServer(io_context_t & io_context)
     | context_t::no_sslv2
     | context_t::single_dh_use
   );
-  // m_context.set_password_callback(std::bind(&TLSServer::GetPW, this));
-  m_context.set_password_callback([](){ return "test"; });
+  m_context.set_password_callback(std::bind(&TLSServer::GetPW, this));
   m_context.use_certificate_chain_file("user.crt"); // TODO: check if this path works
   m_context.use_private_key_file("user.key", context_t::pem); // TODO:
   m_context.use_tmp_dh_file("dh2048.pem"); // TODO:

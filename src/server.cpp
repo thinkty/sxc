@@ -14,6 +14,11 @@ Server::Server()
 		m_ui.ClearInput();
 	};
 
+	// Initialize UI
 	m_ui.Init(on_enter);
 
+	// Initialize the TLS server
+	boost::asio::io_context context;
+	TLSServer server(context);
+	context.run();
 }
