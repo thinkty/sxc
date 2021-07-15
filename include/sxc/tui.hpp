@@ -32,6 +32,7 @@ public:
 		std::function<void()> on_arrow_down = NULL
 	);
 	void Print(const std::wstring message);
+	void Print(const std::string message);
 	void ScrollUp();
 	void ScrollDown();
 	void ClearInput();

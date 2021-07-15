@@ -85,7 +85,8 @@ void TUI::RenderUI(ftxui::Component& input)
 }
 
 /**
- * Print a given message to the display panel
+ * @brief Print a given message to the display panel
+ * @param message A standard wstring object to be displayed
  */
 void TUI::Print(const std::wstring message)
 {
@@ -99,6 +100,17 @@ void TUI::Print(const std::wstring message)
 	}
 
 	m_msg_count++;
+}
+
+/**
+ * @brief Print a given message to the display panel
+ * @param message A standard string object to be converted into wstring before
+ * being displayed
+ * @warning This will fail if a message contains non-ASCII characters
+ */
+void TUI::Print(const std::string message)
+{
+	Print(std::wstring(message.begin(), message.end()));
 }
 
 /**
