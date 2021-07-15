@@ -1,7 +1,8 @@
 #include <sxc/tls.hpp>
 
-TLSSession::TLSSession(ssl_stream_t socket)
+TLSSession::TLSSession(ssl_stream_t socket, TUI & ui)
   : m_socket{std::move(socket)}
+  , m_ui{ui}
 {
 }
 
@@ -20,16 +21,15 @@ void TLSSession::Handshake()
   // that it does not get deleted
   auto self(shared_from_this());
   m_socket.async_handshake(stream_base_t::server,
-    [this, self](const std::error_code& ec)
+    [this, self](const ec_t & ec)
     {
-      if (!ec)
+      if (ec)
       {
-        Read();
+        m_ui.Print(ec.message());
+        return;
       }
-      else
-      {
-        // TODO: Handle error stream
-      }
+      
+      Read();
     }
   );
 }
@@ -41,17 +41,17 @@ void TLSSession::Read()
 {
   auto self(shared_from_this());
   m_socket.async_read_some(boost::asio::buffer(m_data),
-    [this, self](const std::error_code& ec, std::size_t length)
+    [this, self](const ec_t & ec, std::size_t length)
     {
-      if (!ec)
+      if (ec)
       {
-        // TODO: Read and parse message
-      }
-      else
-      {
-        // Close session on error
+        m_ui.Print(ec.message());
+        // TODO: Close session on error
         // SEE https://stackoverflow.com/questions/15312219/need-to-call-sslstreamshutdown-when-closing-boost-asio-ssl-socket
+        return;
       }
+      // TODO: Read and parse message
+
     }
   );
 }
@@ -63,11 +63,11 @@ void TLSSession::Write(std::string stanza)
 {
   auto self(shared_from_this());
   boost::asio::async_write(m_socket, boost::asio::buffer(stanza, stanza.length()),
-    [this, self](const std::error_code& ec, std::size_t)
+    [this, self](const ec_t & ec, std::size_t)
     {
       if (ec)
       {
-        // TODO: Handle error stream
+        m_ui.Print(ec.message());
       }
     }
   );
@@ -76,9 +76,10 @@ void TLSSession::Write(std::string stanza)
 /**
  * @brief Initialize a TCP server on port 5222
  */
-TLSServer::TLSServer(io_context_t & io_context)
+TLSServer::TLSServer(io_context_t & io_context, TUI & ui)
   : m_context{context_t::sslv23}
   , m_acceptor{io_context, tcp_t::endpoint(tcp_t::v4(), XMPP_PORT)}
+  , m_ui{ui}
 {
   m_context.set_options(
     context_t::default_workarounds
@@ -86,10 +87,13 @@ TLSServer::TLSServer(io_context_t & io_context)
     | context_t::single_dh_use
   );
   m_context.set_password_callback(std::bind(&TLSServer::GetPW, this));
-  m_context.use_certificate_chain_file("user.crt"); // TODO: check if this path works
-  m_context.use_private_key_file("user.key", context_t::pem); // TODO:
-  m_context.use_tmp_dh_file("dh2048.pem"); // TODO:
+  // TODO: Perhaps get paths from the arguments I don't like hardcoding it in
+  std::string base_path("/home/thinkty/projects/sxc/");
+  m_context.use_certificate_chain_file(base_path + "user.crt");
+  m_context.use_private_key_file(base_path + "user.key", context_t::pem);
+  m_context.use_tmp_dh_file(base_path + "dh2048.pem");
 
+  m_ui.Print("Initializing server...");
   Accept();
 }
 
@@ -107,18 +111,18 @@ std::string TLSServer::GetPW() const
 void TLSServer::Accept()
 {
   m_acceptor.async_accept(
-    [this](const ec_t& ec, tcp_t::socket socket)
+    [this](const ec_t & ec, tcp_t::socket socket)
     {
-      if (!ec)
+      if (ec)
       {
-        std::make_shared<TLSSession>(ssl_stream_t(std::move(socket), m_context))->Start();
+        m_ui.Print(ec.message());
       }
       else
       {
-        // TODO: print ec.message() to ui
+        std::make_shared<TLSSession>(ssl_stream_t(std::move(socket), m_context), m_ui)->Start();
       }
 
-      // Accept on error TODO: is this necessary?
+      // Accept new connection
       Accept();
     }
   );
