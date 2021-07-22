@@ -13,6 +13,8 @@ private:
 
 public:
 	Server();
+	void InitServer();
+	void InitUI();
 };
 
 #endif
