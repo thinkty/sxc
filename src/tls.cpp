@@ -28,7 +28,8 @@ void TLSSession::Handshake()
         m_ui.Print(ec.message());
         return;
       }
-      
+      // TODO: find a method to test the handshake (telnet doesn't seem to work)
+      m_ui.Print("Incoming connection...");
       Read();
     }
   );
@@ -106,7 +107,10 @@ std::string TLSServer::GetPW() const
 }
 
 /**
- * @brief Start listening for incoming connections
+ * @brief Start listening for incoming connections. For a deeper explanation of
+ * the process of an Asio server, visit the link in the reference.
+ * @ref https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio/overview/core/basics.html
+ * 
  */
 void TLSServer::Accept()
 {
@@ -119,6 +123,7 @@ void TLSServer::Accept()
       }
       else
       {
+        m_ui.Print("Connection accepted...");
         std::make_shared<TLSSession>(ssl_stream_t(std::move(socket), m_context), m_ui)->Start();
       }
 

@@ -7,8 +7,16 @@ Server::Server()
 	: m_cmd{}
 	, m_ui{&m_cmd}
 {
-	// TODO: I'm not sure if putting these two in a separate thread is right
-	// TODO: it's very weird. should look up multi threading asio and ftxui
+	// Run the server in a separate thread
+	// TODO: running the server on a separate thread works but i must
+	// TODO: look for any problems, especially with ones accessing m_ui.
+	// TODO: since it is using the same resource, look for race conditions
+	// TODO: in addition, the incoming message does not trigger a re-render
+	// TODO: hence, the screen only gets updated on mouse/keyboard event
+	std::thread tls_server(& Server::InitServer, this);
+	tls_server.detach();
+
+	InitUI();
 }
 
 /**
@@ -18,7 +26,11 @@ void Server::InitServer()
 {
 	boost::asio::io_context context;
 	TLSServer server(context, m_ui);
+
+	// The execution blocks the thread
 	context.run();
+
+	m_ui.Print("Server closed...");
 }
 
 /**

@@ -4,6 +4,7 @@
 #include "tui.hpp"
 #include "tls.hpp"
 #include <string>
+#include <thread>
 
 class Server
 {
