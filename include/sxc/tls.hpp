@@ -11,9 +11,11 @@
 #define XMPP_PORT 5222
 
 typedef boost::asio::ip::tcp tcp_t;
+typedef tcp_t::resolver::results_type results_t;
 typedef boost::asio::ssl::stream<tcp_t::socket> ssl_stream_t;
 typedef boost::asio::ssl::stream_base stream_base_t;
 typedef boost::asio::ssl::context context_t;
+typedef boost::asio::ssl::verify_context ver_context_t;
 typedef boost::asio::io_context io_context_t;
 typedef boost::system::error_code ec_t;
 typedef std::function<void()> callback_t;
@@ -37,7 +39,7 @@ public:
 };
 
 /**
- * @see https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio/examples/cpp11_examples.html#boost_asio.examples.cpp11_examples.ssl
+ * @ref https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio/examples/cpp11_examples.html#boost_asio.examples.cpp11_examples.ssl
  */
 class TLSServer
 {
@@ -51,6 +53,32 @@ private:
 
 public:
   TLSServer(io_context_t & io_context, TUI & ui);
+};
+
+/**
+ * @ref https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio/example/cpp11/ssl/client.cpp
+ */
+class TLSClient
+{
+private:
+  ssl_stream_t m_socket;
+  TUI & m_ui;
+  char m_req[1024];
+  char m_res[1024];
+
+  bool VerifyCert(bool preverified, ver_context_t & ctx);
+  void Connect(const results_t & endpoints);
+  void Handshake();
+  void SendRequest();
+  void RecvResponse(std::size_t length);
+
+public:
+  TLSClient(
+    io_context_t & io_context,
+    context_t & ssl_context,
+    const results_t & endpoints,
+    TUI & ui
+  );
 };
 
 #endif

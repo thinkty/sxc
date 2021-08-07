@@ -132,3 +132,120 @@ void TLSServer::Accept()
     }
   );
 }
+
+TLSClient::TLSClient(
+  io_context_t & io_context,
+  context_t & ssl_context,
+  const results_t & endpoints,
+  TUI & ui
+)
+  : m_socket{io_context, ssl_context}
+  , m_ui{ui}
+{
+  m_socket.set_verify_mode(boost::asio::ssl::verify_peer);
+  m_socket.set_verify_callback(
+    std::bind(
+      &TLSClient::VerifyCert,
+      this,
+      std::placeholders::_1,
+      std::placeholders::_2
+    )
+  );
+
+  Connect(endpoints);
+}
+
+bool TLSClient::VerifyCert(bool preverified, ver_context_t & ctx)
+{
+  // The verify callback can be used to check whether the certificate that is
+  // being presented is valid for the peer. For example, RFC 2818 describes
+  // the steps involved in doing this for HTTPS. Consult the OpenSSL
+  // documentation for more details. Note that the callback is called once
+  // for each certificate in the certificate chain, starting from the root
+  // certificate authority.
+
+  // In this example we will simply print the certificate's subject name.
+  char subject_name[256];
+  X509 * cert = X509_STORE_CTX_get_current_cert(ctx.native_handle());
+  X509_NAME_oneline(X509_get_subject_name(cert), subject_name, 256);
+  m_ui.Print("Verifying" + std::string(subject_name));
+
+  return preverified;
+}
+
+void TLSClient::Connect(const results_t & endpoints)
+{
+  boost::asio::async_connect(m_socket.lowest_layer(), endpoints,
+    [this](const ec_t & error, const tcp_t::endpoint & endpoint)
+    {
+      if (!error)
+      {
+        Handshake();
+      }
+      else
+      {
+        m_ui.Print(error.message());
+      }
+    }
+  );
+}
+
+void TLSClient::Handshake()
+{
+  m_socket.async_handshake(stream_base_t::client,
+    [this](const ec_t & error)
+    {
+      if (!error)
+      {
+        SendRequest();
+      }
+      else
+      {
+        m_ui.Print(error.message());
+      }
+    }
+  );
+}
+
+void TLSClient::SendRequest()
+{
+  // TODO: Instead of sending a request right away, get the request from
+  // TODO: the user by using a prod/cons queue
+
+  // TODO: Read from queue if ready
+  strcpy(m_req, "hello world");
+  size_t req_length = std::strlen(m_req);
+
+  boost::asio::async_write(m_socket,
+    boost::asio::buffer(m_req, req_length),
+    [this](const ec_t & error, std::size_t res_length)
+    {
+      if (!error)
+      {
+        RecvResponse(res_length);
+      }
+      else
+      {
+        m_ui.Print(error.message());
+      }
+    }
+  );
+}
+
+void TLSClient::RecvResponse(std::size_t res_length)
+{
+  boost::asio::async_read(m_socket,
+    boost::asio::buffer(m_res, res_length),
+    [this](const ec_t & error, std::size_t length)
+    {
+      if (!error)
+      {
+        m_ui.Print(std::string(m_res));
+      }
+      else
+      {
+        m_ui.Print(error.message());
+      }
+    }
+  );
+}
