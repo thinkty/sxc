@@ -17,24 +17,19 @@ class TUI
 {
 private:
 	std::wstring * m_input;
-	// ftxui::Elements m_container;
 	ftxui::Component m_container;
+	ftxui::ScreenInteractive m_screen;
 	int m_msg_count;
 	int m_index;
 
-	void RenderUI(ftxui::Component& input);
+	void ScrollUp();
+	void ScrollDown();
 
 public:
 	TUI(std::wstring * input);
-	void Init(
-		std::function<void()> on_enter,
-		std::function<void()> on_arrow_up = NULL,
-		std::function<void()> on_arrow_down = NULL
-	);
+	void Init(std::function<void()> on_enter);
 	void Print(const std::wstring message);
 	void Print(const std::string message);
-	void ScrollUp();
-	void ScrollDown();
 	void ClearInput();
 	void ClearContainer();
 };
