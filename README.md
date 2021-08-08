@@ -1,5 +1,13 @@
-# Simple XMPP Chat
+# Simple XMPP Chat — WIP
 
-This is just a simple XMPP client/server for the terminal.
+A simple XMPP client.
 
-- SSL/TLS only
+# Flow Chart
+
+![flowchart](https://github.com/thinkty/sxc/blob/main/flowchart.png)
+
+This is the flow chart of the client process as of 2021-Aug-08.
+
+# License
+
+MIT
