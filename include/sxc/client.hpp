@@ -3,8 +3,12 @@
 
 #include "tui.hpp"
 #include "tls.hpp"
+
 #include <string>
 #include <thread>
+#include <functional>
+
+#define GREETINGS_MSG "Welcome to SXC, enter 'help' to show a list of commands"
 
 class Client
 {
@@ -16,8 +20,8 @@ private:
 
 public:
 	Client();
-	void InitClient(std::string host, std::string port);
-	void InitUI();
+	void InitTLSClient(std::string host, std::string port);
+	void InitUI(std::function<void()> on_success);
 };
 
 #endif

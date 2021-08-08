@@ -27,7 +27,10 @@ private:
 
 public:
 	TUI(std::wstring * input);
-	void Init(std::function<void()> on_enter);
+	void Init(
+		std::function<void()> on_enter,
+		std::function<void()> on_success = NULL
+	);
 	void Print(const std::wstring message);
 	void Print(const std::string message);
 	void ClearInput();

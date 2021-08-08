@@ -13,8 +13,12 @@ TUI::TUI(std::wstring * input)
  * Initialize the interactive components of the renderer and display it
  *
  * @param on_enter Callback on enter pressed
+ * @param on_success Callback on initialization successful (optional)
  */
-void TUI::Init(std::function<void()> on_enter)
+void TUI::Init(
+	std::function<void()> on_enter,
+	std::function<void()> on_success
+)
 {
 	ftxui::Component input = ftxui::Make<CustomInput>(m_input);
 
@@ -51,7 +55,10 @@ void TUI::Init(std::function<void()> on_enter)
 		}
 	);
 
-	// Render UI on loop
+	// Call the success callback here as the InteractiveScreen::Loop is blocking
+	on_success();
+
+	// Render UI on loop (Blocking)
 	m_screen.Loop(renderer);
 }
 

@@ -7,13 +7,28 @@ Client::Client()
 	: m_cmd{}
 	, m_ui{&m_cmd}
 {
-	// TODO: Prompt the user for XMPP server ip and port
-	// m_host, m_port
+	// Print out the greetings and starter message on successful UI initialization
+	InitUI([this]()
+		{
+			m_ui.Print(GREETINGS_MSG);
+		}
+	);
+}
 
-	std::thread tls_client(& Client::InitClient, this, m_host, m_port);
-	tls_client.detach();
+/**
+ * @brief Initialize the UI and call the callback function on completion
+ * @param on_success Callback function to be called on initialization success
+ */
+void Client::InitUI(std::function<void()> on_success)
+{
+	auto on_enter = [this]()
+	{
+		// TODO: Handle input (parse command)
+		m_ui.Print(m_cmd);
+		m_ui.ClearInput();
+	};
 
-	InitUI();
+	m_ui.Init(on_enter, on_success);
 }
 
 /**
@@ -22,7 +37,7 @@ Client::Client()
  * @param port Port number of the receiving XMPP server
  * @ref https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio/example/cpp11/ssl/client.cpp
  */
-void Client::InitClient(std::string host, std::string port)
+void Client::InitTLSClient(std::string host, std::string port)
 {
 	boost::asio::io_context io_ctx;
 	boost::asio::ip::tcp::resolver resolver(io_ctx);
@@ -37,20 +52,4 @@ void Client::InitClient(std::string host, std::string port)
 	io_ctx.run();
 
 	m_ui.Print("Client closed...");
-}
-
-/**
- * @brief Initialize the UI
- */
-void Client::InitUI()
-{
-	auto on_enter = [this]()
-	{
-		// TODO: Handle input
-		m_ui.Print(m_cmd);
-		m_ui.ClearInput();
-	};
-
-	m_ui.Init(on_enter);
-	m_ui.Print("Initializing UI...");
 }
