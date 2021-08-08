@@ -10,6 +10,7 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 
+#include <mutex>
 #include <string>
 #include <functional>
 
@@ -21,6 +22,7 @@ private:
 	ftxui::ScreenInteractive m_screen;
 	int m_msg_count;
 	int m_index;
+	std::mutex m_mutex;
 
 	void ScrollUp();
 	void ScrollDown();
@@ -29,7 +31,7 @@ public:
 	TUI(std::wstring * input);
 	void Init(
 		std::function<void()> on_enter,
-		std::function<void()> on_success = NULL
+		std::function<void()> on_success = ([]{})
 	);
 	void Print(const std::wstring message);
 	void Print(const std::string message);

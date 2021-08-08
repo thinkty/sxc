@@ -68,19 +68,24 @@ void TUI::Init(
  */
 void TUI::Print(const std::wstring message)
 {
-	m_container->Add(ftxui::Make<Focusable>(message));
-
-	if (m_index == m_msg_count - 1)
 	{
-		// If already at bottom, scroll to down
-		ScrollDown();
-		m_index++;
+		std::scoped_lock lock(m_mutex);
+
+		m_container->Add(ftxui::Make<Focusable>(message));
+
+		if (m_index == m_msg_count - 1)
+		{
+			// If already at bottom, scroll to down
+			ScrollDown();
+			m_index++;
+		}
+
+		m_msg_count++;
 	}
 
-	m_msg_count++;
-
 	// Trigger a re-render to update the view with new message
-	// Thread-safe (https://github.com/ArthurSonzogni/FTXUI/issues/41#issuecomment-671832846)
+	// This section is thread-safe
+	// https://github.com/ArthurSonzogni/FTXUI/issues/41#issuecomment-671832846
 	m_screen.PostEvent(ftxui::Event::Custom);
 }
 
