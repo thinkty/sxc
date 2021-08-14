@@ -7,6 +7,7 @@ add_library(sxc_lib STATIC
 	focusable.cpp
 	custom_input.cpp
 	tls.cpp
+	util.cpp
 	${HEADER_LIST}
 )
 
