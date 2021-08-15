@@ -49,13 +49,86 @@ void Client::InitUI(std::function<void()> on_success)
  */
 void Client::ParseInput()
 {
-	if (m_status == init)
+	if (m_cmd.empty())
 	{
-		auto cmds = Util::split(m_cmd);
-		// TODO: compare for connect
+		return;
 	}
 
-	// TODO: m_status == connected, talking
+	switch (m_status)
+	{
+	case init:
+		HandleInitStatus();
+		break;
+
+	case connected:
+		HandleConnectedStatus();
+		break;
+
+	case talking:
+		HandleTalkingStatus();
+		break;
+	
+	default:
+		// Unexpected status
+		m_ui.Print("Error: Unexpected Status Code " + m_status);
+		break;
+	}
+}
+
+/**
+ * @brief Handle user commands while the user is in the `init` status
+ */
+void Client::HandleInitStatus()
+{
+	m_ui.Print(m_cmd);
+	auto cmds = Util::split(m_cmd);
+
+	if (cmds[0] == L"help")
+	{
+		m_ui.Print(INIT_HELP_MSG);
+	}
+	// Host argument is required
+	else if (cmds.size() == 1 && cmds[0] == L"connect")
+	{
+		m_ui.Print(INIT_ERR_MSG3);
+	}
+	else if (cmds.size() <= 3 && cmds[0] == L"connect")
+	{
+		// Parse host (required) and port (optional)
+		m_host = std::string(cmds[1].begin(), cmds[1].end());
+		if (cmds.size() == 2)
+		{
+			m_port = "5222";
+		}
+		else
+		{
+			m_port = std::string(cmds[2].begin(), cmds[2].end());
+		}
+		m_ui.Print("Connecting to " + m_host + ":" + m_port);
+
+		// TODO: connect to xmpp server
+	}
+	else
+	{
+		m_ui.Print(INIT_ERR_MSG1);
+		m_ui.Print(INIT_ERR_MSG2);
+	}
+}
+
+/**
+ * @brief Handle user commands while the user is in the `connected` status
+ */
+void Client::HandleConnectedStatus()
+{
+
+}
+
+/**
+ * @brief Handle user commands while the user is in the `talking` status
+ */
+void Client::HandleTalkingStatus()
+{
+
 }
 
 /**
