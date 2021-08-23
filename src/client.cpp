@@ -106,7 +106,9 @@ void Client::HandleInitStatus()
 		}
 		m_ui.Print("Connecting to " + m_host + ":" + m_port);
 
-		// TODO: connect to xmpp server
+		// Connect to xmpp server
+		std::thread tls_client(& Client::InitTLSClient, this);
+		tls_client.detach();
 	}
 	else
 	{
@@ -143,15 +145,13 @@ void Client::UpdateStatus(const Status & status)
 
 /**
  * @brief Initialize the TLS server
- * @param host Host of the receiving XMPP server
- * @param port Port number of the receiving XMPP server
  * @ref https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio/example/cpp11/ssl/client.cpp
  */
-void Client::InitTLSClient(std::string host, std::string port)
+void Client::InitTLSClient()
 {
 	boost::asio::io_context io_ctx;
 	boost::asio::ip::tcp::resolver resolver(io_ctx);
-	auto endpoints = resolver.resolve(host, port);
+	auto endpoints = resolver.resolve(m_host, m_port);
 
 	boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::sslv23);
 	ssl_ctx.load_verify_file("/home/thinkty/projects/sxc/rootca.crt"); // TODO: path to cert
@@ -161,5 +161,5 @@ void Client::InitTLSClient(std::string host, std::string port)
 	// The execution blocks the thread
 	io_ctx.run();
 
-	m_ui.Print("Client closed...");
+	m_ui.Print("Connection closed...");
 }

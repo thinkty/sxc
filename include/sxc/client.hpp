@@ -31,7 +31,7 @@ private:
 	Status m_status;
 	TUI m_ui;
 
-	void InitTLSClient(std::string host, std::string port);
+	void InitTLSClient();
 	void InitUI(std::function<void()> on_success);
 	void ParseInput();
 	void HandleInitStatus();
