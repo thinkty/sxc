@@ -4,7 +4,7 @@
  * @brief Split the given string into words by the space and ignore adjacent
  * spaces. Returns an empty vector on input length is 0.
  */
-std::vector<std::wstring> Util::split(std::wstring input)
+std::vector<std::wstring> Util::Split(std::wstring input)
 {
   std::vector<std::wstring> container;
   if (input.size() == 0)
@@ -46,4 +46,29 @@ std::vector<std::wstring> Util::split(std::wstring input)
   }
 
   return container;
+}
+
+/**
+ * @brief Print the endpoint details. On resolver failure, it print nothing.
+ */
+std::string Util::GetEndPointInfo(
+  const results_t & endpoints,
+  const std::string & port,
+  bool only_ipv4
+)
+{
+  std::stringstream ep_str;
+	ep_str << "Connecting to ";
+	for (auto i : endpoints)
+	{
+    if (only_ipv4 && i.endpoint().address().is_v6())
+    {
+      continue;
+    }
+
+    ep_str << i.endpoint().address().to_string() << " ";
+	}
+
+	ep_str << "on port " << port;
+  return ep_str.str();
 }
