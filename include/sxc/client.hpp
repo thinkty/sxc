@@ -17,7 +17,7 @@
 #define INIT_ERR_MSG2 "Enter 'help' to show a list of commands available."
 #define INIT_ERR_MSG3 "The host argument for the connect command is required."
 
-enum Status {
+enum class Status {
 	init,
 	connecting,
 	connected,

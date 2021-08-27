@@ -6,7 +6,7 @@
 Client::Client()
 	: m_cmd{}
 	, m_ui{&m_cmd}
-	, m_status{init}
+	, m_status{Status::init}
 {
 	// Print out the greetings and starter message on successful UI initialization
 	InitUI([this]()
@@ -56,25 +56,25 @@ void Client::ParseInput()
 
 	switch (m_status)
 	{
-	case init:
+	case Status::init:
 		HandleInitStatus();
 		break;
 
-	case connecting:
+	case Status::connecting:
 		HandleConnectingStatus();
 		break;
 	
-	case connected:
+	case Status::connected:
 		HandleConnectedStatus();
 		break;
 
-	case talking:
+	case Status::talking:
 		HandleTalkingStatus();
 		break;
 	
 	default:
 		// Unexpected status
-		m_ui.Print("Error: Unexpected Status Code " + m_status);
+		m_ui.Print("Error: Unexpected Status Code");
 		break;
 	}
 }
@@ -155,15 +155,19 @@ void Client::UpdateStatus(const Status & status)
 	std::string status_str;
 	switch (m_status)
 	{
-	case init:
+	case Status::init:
 		status_str = "<INIT>";
 		break;
 	
-	case connecting:
+	case Status::connecting:
 		status_str = "<CONNECTING>";
 		break;
 
-	case talking:
+	case Status::connected:
+		status_str = "<CONNECTED>";
+		break;
+
+	case Status::talking:
 		status_str = "<TALKING>";
 		break;
 
@@ -180,25 +184,34 @@ void Client::UpdateStatus(const Status & status)
  */
 void Client::InitTLSClient()
 {
-	UpdateStatus(connecting);
+	UpdateStatus(Status::connecting);
 	boost::asio::io_context io_ctx;
 	boost::asio::ip::tcp::resolver resolver(io_ctx);
-	auto endpoints = resolver.resolve(m_host, m_port);
-	m_ui.Print(Util::GetEndPointInfo(endpoints, m_port, true));
 
-	boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::sslv23);
-	ssl_ctx.load_verify_file("/home/thinkty/projects/sxc/rootca.crt"); // TODO: path to cert
+	try
+	{
+		auto endpoints = resolver.resolve(m_host, m_port);
+		m_ui.Print(Util::GetEndPointInfo(endpoints, m_port, true));
 
-	TLSClient client(io_ctx, ssl_ctx, endpoints, m_ui, [this]()
-		{
-			UpdateStatus(Status::connected);
-		}
-	);
+		boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::sslv23);
+		ssl_ctx.load_verify_file("/home/thinkty/projects/sxc/rootca.crt"); // TODO: path to cert
 
-	// The execution blocks the thread
-	io_ctx.run();
+		TLSClient client(io_ctx, ssl_ctx, endpoints, m_ui, [&]()
+			{
+				UpdateStatus(Status::connected);
+			}
+		);
 
-	// Set status back to 'init' on disconnect
-	UpdateStatus(init);
-	m_ui.Print("Connection closed");
+		// The execution blocks the thread
+		io_ctx.run();
+
+		// Set status back to 'init' on disconnect
+		m_ui.Print("Connection closed");
+		UpdateStatus(Status::init);
+	}
+	catch (const std::exception & e)
+	{
+		m_ui.Print(e.what());
+		UpdateStatus(Status::init);
+	}
 }
