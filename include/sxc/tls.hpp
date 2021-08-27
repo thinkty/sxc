@@ -65,6 +65,7 @@ private:
   TUI & m_ui;
   char m_req[1024];
   char m_res[1024];
+  callback_t m_on_connect;
 
   bool VerifyCert(bool preverified, ver_context_t & ctx);
   void Connect(const results_t & endpoints);
@@ -77,7 +78,8 @@ public:
     io_context_t & io_context,
     context_t & ssl_context,
     const results_t & endpoints,
-    TUI & ui
+    TUI & ui,
+    callback_t m_on_connect
   );
 };
 

@@ -137,12 +137,16 @@ TLSClient::TLSClient(
   io_context_t & io_context,
   context_t & ssl_context,
   const results_t & endpoints,
-  TUI & ui
+  TUI & ui,
+  callback_t on_connect
 )
   : m_socket{io_context, ssl_context}
   , m_ui{ui}
 {
+  m_on_connect = std::move(on_connect);
+
   m_socket.set_verify_mode(boost::asio::ssl::verify_peer);
+  // TODO: Can't i use lambda here?
   m_socket.set_verify_callback(
     std::bind(
       &TLSClient::VerifyCert,
@@ -151,7 +155,7 @@ TLSClient::TLSClient(
       std::placeholders::_2
     )
   );
-
+  m_on_connect(); /////////// testing
   Connect(endpoints);
 }
 
@@ -197,6 +201,8 @@ void TLSClient::Handshake()
     {
       if (!error)
       {
+        // Update status on connect successful
+        m_on_connect();
         SendRequest();
       }
       else
