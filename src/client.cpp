@@ -36,7 +36,7 @@ void Client::InitUI(std::function<void()> on_success)
  * the program and is in `init` status, listen for `connect` command and
  * arguments regarding host and port.
  *
- * If in `connected` status, listen for different commands such as
+ * If in `connecting` status, listen for different commands such as
  * - list              : show a list of contacts
  * - add [recipient]   : create a new contact
  * - enter [recipient] : send messages to the specified recipient
@@ -60,6 +60,10 @@ void Client::ParseInput()
 		HandleInitStatus();
 		break;
 
+	case connecting:
+		HandleConnectingStatus();
+		break;
+	
 	case connected:
 		HandleConnectedStatus();
 		break;
@@ -80,8 +84,8 @@ void Client::ParseInput()
  */
 void Client::HandleInitStatus()
 {
-	m_ui.Print(m_cmd);
-	auto cmds = Util::split(m_cmd);
+	m_ui.Print(L"> " + m_cmd);
+	auto cmds = Util::Split(m_cmd);
 
 	if (cmds[0] == L"help")
 	{
@@ -104,7 +108,6 @@ void Client::HandleInitStatus()
 		{
 			m_port = std::string(cmds[2].begin(), cmds[2].end());
 		}
-		m_ui.Print("Connecting to " + m_host + ":" + m_port);
 
 		// Connect to xmpp server
 		std::thread tls_client(& Client::InitTLSClient, this);
@@ -118,11 +121,19 @@ void Client::HandleInitStatus()
 }
 
 /**
+ * @brief Handle user commands while the user is in the `connecting` status
+ */
+void Client::HandleConnectingStatus()
+{
+	m_ui.Print("Please wait while connecting");
+}
+
+/**
  * @brief Handle user commands while the user is in the `connected` status
  */
 void Client::HandleConnectedStatus()
 {
-
+	m_ui.Print(L"> " + m_cmd);
 }
 
 /**
@@ -130,7 +141,7 @@ void Client::HandleConnectedStatus()
  */
 void Client::HandleTalkingStatus()
 {
-
+	m_ui.Print(L"> " + m_cmd);
 }
 
 /**
@@ -139,8 +150,28 @@ void Client::HandleTalkingStatus()
  */
 void Client::UpdateStatus(const Status & status)
 {
+	std::scoped_lock lock(m_mutex);
 	m_status = status;
-	m_ui.Print("Updated status to " + m_status);
+	std::string status_str;
+	switch (m_status)
+	{
+	case init:
+		status_str = "<INIT>";
+		break;
+	
+	case connecting:
+		status_str = "<CONNECTING>";
+		break;
+
+	case talking:
+		status_str = "<TALKING>";
+		break;
+
+	default:
+		status_str = "<UNRECOGNIZED>";
+		break;
+	}
+	m_ui.Print("Updated status to " + status_str);
 }
 
 /**
@@ -149,17 +180,25 @@ void Client::UpdateStatus(const Status & status)
  */
 void Client::InitTLSClient()
 {
+	UpdateStatus(connecting);
 	boost::asio::io_context io_ctx;
 	boost::asio::ip::tcp::resolver resolver(io_ctx);
 	auto endpoints = resolver.resolve(m_host, m_port);
+	m_ui.Print(Util::GetEndPointInfo(endpoints, m_port, true));
 
 	boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::sslv23);
 	ssl_ctx.load_verify_file("/home/thinkty/projects/sxc/rootca.crt"); // TODO: path to cert
 
-	TLSClient client(io_ctx, ssl_ctx, endpoints, m_ui);
+	TLSClient client(io_ctx, ssl_ctx, endpoints, m_ui, [this]()
+		{
+			UpdateStatus(Status::connected);
+		}
+	);
 
 	// The execution blocks the thread
 	io_ctx.run();
 
-	m_ui.Print("Connection closed...");
+	// Set status back to 'init' on disconnect
+	UpdateStatus(init);
+	m_ui.Print("Connection closed");
 }

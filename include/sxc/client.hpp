@@ -5,6 +5,7 @@
 #include "tls.hpp"
 #include "util.hpp"
 
+#include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -18,6 +19,7 @@
 
 enum Status {
 	init,
+	connecting,
 	connected,
 	talking,
 };
@@ -25,6 +27,7 @@ enum Status {
 class Client
 {
 private:
+	std::mutex m_mutex;
 	std::string m_host;
 	std::string m_port;
 	std::wstring m_cmd;
@@ -35,6 +38,7 @@ private:
 	void InitUI(std::function<void()> on_success);
 	void ParseInput();
 	void HandleInitStatus();
+	void HandleConnectingStatus();
 	void HandleConnectedStatus();
 	void HandleTalkingStatus();
 	void UpdateStatus(const Status & status);
