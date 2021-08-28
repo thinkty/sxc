@@ -194,7 +194,8 @@ void Client::InitTLSClient()
 		m_ui.Print(Util::GetEndPointInfo(endpoints, m_port, true));
 
 		boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::sslv23);
-		ssl_ctx.load_verify_file("/home/thinkty/projects/sxc/rootca.crt"); // TODO: path to cert
+		// Use the certs in the ca-certificates package
+		ssl_ctx.set_default_verify_paths();
 
 		TLSClient client(io_ctx, ssl_ctx, endpoints, m_ui, [&]()
 			{
