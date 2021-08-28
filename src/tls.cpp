@@ -146,7 +146,6 @@ TLSClient::TLSClient(
   m_on_connect = std::move(on_connect);
 
   m_socket.set_verify_mode(boost::asio::ssl::verify_peer);
-  // TODO: Can't i use lambda here?
   m_socket.set_verify_callback(
     std::bind(
       &TLSClient::VerifyCert,
@@ -155,7 +154,6 @@ TLSClient::TLSClient(
       std::placeholders::_2
     )
   );
-  m_on_connect(); /////////// testing
   Connect(endpoints);
 }
 
@@ -172,7 +170,8 @@ bool TLSClient::VerifyCert(bool preverified, ver_context_t & ctx)
   char subject_name[256];
   X509 * cert = X509_STORE_CTX_get_current_cert(ctx.native_handle());
   X509_NAME_oneline(X509_get_subject_name(cert), subject_name, 256);
-  m_ui.Print("Verifying" + std::string(subject_name));
+  m_ui.Print("Verifying " + std::string(subject_name));
+  m_ui.Print("Verified: " + std::string(preverified ? "Yes" : "No"));
 
   return preverified;
 }
@@ -203,6 +202,8 @@ void TLSClient::Handshake()
       {
         // Update status on connect successful
         m_on_connect();
+        // TODO: Start reading in from the outbound queue for messages to send
+        // TODO: and inbound queue for messages to print and handle
         SendRequest();
       }
       else
