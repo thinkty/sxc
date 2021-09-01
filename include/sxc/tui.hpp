@@ -14,6 +14,10 @@
 #include <string>
 #include <functional>
 
+/**
+ * TUI object manages the overall user interface of the application. It allows
+ * printing messages onto the terminal and take input from the user.
+ */
 class TUI
 {
 private:
