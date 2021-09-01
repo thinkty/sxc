@@ -1,9 +1,9 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "tui.hpp"
-#include "tls.hpp"
-#include "util.hpp"
+#include <sxc/tui.hpp>
+#include <sxc/tls.hpp>
+#include <sxc/util.hpp>
 
 #include <mutex>
 #include <string>
