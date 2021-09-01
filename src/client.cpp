@@ -8,24 +8,17 @@ Client::Client()
 	, m_ui{&m_cmd}
 	, m_status{Status::init}
 {
-	// Print out the greetings and starter message on successful UI initialization
-	InitUI([this]()
-		{
-			m_ui.Print(GREETINGS_MSG);
-		}
-	);
-}
-
-/**
- * @brief Initialize the UI and call the callback function on completion
- * @param on_success Callback function to be called on initialization success
- */
-void Client::InitUI(std::function<void()> on_success)
-{
+	// Parse input based on current status when the user presses enters
 	auto on_enter = [this]()
 	{
 		ParseInput();
 		m_ui.ClearInput();
+	};
+
+	// Print out the greetings and starter message on successful UI initialization
+	auto on_success = [this]()
+	{
+		m_ui.Print(GREETINGS_MSG);
 	};
 
 	m_ui.Init(on_enter, on_success);

@@ -35,7 +35,6 @@ private:
 	TUI m_ui;
 
 	void InitTLSClient();
-	void InitUI(std::function<void()> on_success);
 	void ParseInput();
 	void HandleInitStatus();
 	void HandleConnectingStatus();
