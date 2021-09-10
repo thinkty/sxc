@@ -138,10 +138,14 @@ TLSClient::TLSClient(
   context_t & ssl_context,
   const results_t & endpoints,
   TUI & ui,
+  Queue & inbound,
+  Queue & outbound,
   callback_t on_connect
 )
   : m_socket{io_context, ssl_context}
   , m_ui{ui}
+  , m_inbound{inbound}
+  , m_outbound{outbound}
 {
   m_on_connect = std::move(on_connect);
 
@@ -202,13 +206,19 @@ void TLSClient::Handshake()
       {
         // Update status on connect successful
         m_on_connect();
-        // TODO: Start reading in from the outbound queue for messages to send
-        // TODO: and inbound queue for messages to print and handle
-        SendRequest();
+
+        // Start a thread for pushing responses from server to the inbound queue
+        m_outbound.Push(std::string{"<stream>"});
+        std::thread message_sender_t(& TLSClient::SendRequest, this);
+        message_sender_t.detach();
+
+        // Start a thread for reading from outbound queue to send to the server
+        // std::thread message_receiver_t(& TLSClient::RecvResponse, this);
+        // message_receiver_t.detach();
       }
       else
       {
-        m_ui.Print(error.message());
+        m_ui.Print("Error: " + error.message());
       }
     }
   );
@@ -216,43 +226,44 @@ void TLSClient::Handshake()
 
 void TLSClient::SendRequest()
 {
-  // TODO: Instead of sending a request right away, get the request from
-  // TODO: the user by using a prod/cons queue
-
-  // TODO: Read from queue if ready
-  strcpy(m_req, "hello world");
-  size_t req_length = std::strlen(m_req);
-
-  boost::asio::async_write(m_socket,
-    boost::asio::buffer(m_req, req_length),
-    [this](const ec_t & error, std::size_t res_length)
+  try
+  {
+    while (true)
     {
-      if (!error)
-      {
-        RecvResponse(res_length);
-      }
-      else
-      {
-        m_ui.Print(error.message());
-      }
+      std::string message = m_outbound.Pop();
+      m_ui.Print(message);
+
+      std::ostream output{& m_req};
+      output << message;
+
+      std::this_thread::sleep_for(std::chrono::seconds(3)); // TODO:
+      // TODO: Parse message to send to server
+      // TODO: XMPP document to string
+      boost::asio::write(m_socket, m_req);
     }
-  );
+  }
+  catch(const ec_t & error)
+  {
+    m_ui.Print("Error: " + error.message());
+  }
 }
 
-void TLSClient::RecvResponse(std::size_t res_length)
+void TLSClient::RecvResponse()
 {
-  boost::asio::async_read(m_socket,
-    boost::asio::buffer(m_res, res_length),
-    [this](const ec_t & error, std::size_t length)
+  try
+  {
+    while (true)
     {
-      if (!error)
-      {
-        m_ui.Print(std::string(m_res));
-      }
-      else
-      {
-        m_ui.Print(error.message());
-      }
+      auto bytes_transferred = boost::asio::read(m_socket, m_res);
+      std::string response = boost::asio::buffer_cast<const char*>(m_res.data());
+      m_res.consume(bytes_transferred);
+
+      m_ui.Print(response);
+      m_inbound.Push(response);
     }
-  );
+  }
+  catch(const ec_t & error)
+  {
+    m_ui.Print("Error: " + error.message());
+  }
 }

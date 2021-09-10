@@ -2,9 +2,14 @@
 #define TCP_SERVER_HH
 
 #include <sxc/tui.hpp>
+#include <sxc/queue.hpp>
+
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/system/error_code.hpp>
+
+#include <chrono> // TODO: for debugging
+#include <thread>
 #include <string>
 #include <functional>
 
@@ -12,6 +17,7 @@
 
 typedef boost::asio::ip::tcp tcp_t;
 typedef tcp_t::resolver::results_type results_t;
+typedef boost::asio::streambuf streambuf_t;
 typedef boost::asio::ssl::stream<tcp_t::socket> ssl_stream_t;
 typedef boost::asio::ssl::stream_base stream_base_t;
 typedef boost::asio::ssl::context context_t;
@@ -63,15 +69,17 @@ class TLSClient
 private:
   ssl_stream_t m_socket;
   TUI & m_ui;
-  char m_req[1024];
-  char m_res[1024];
+  Queue & m_inbound;
+  Queue & m_outbound;
   callback_t m_on_connect;
+  streambuf_t m_req;
+  streambuf_t m_res;
 
   bool VerifyCert(bool preverified, ver_context_t & ctx);
   void Connect(const results_t & endpoints);
   void Handshake();
   void SendRequest();
-  void RecvResponse(std::size_t length);
+  void RecvResponse();
 
 public:
   TLSClient(
@@ -79,6 +87,8 @@ public:
     context_t & ssl_context,
     const results_t & endpoints,
     TUI & ui,
+    Queue & inbound,
+    Queue & outbound,
     callback_t m_on_connect
   );
 };
