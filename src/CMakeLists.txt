@@ -8,6 +8,7 @@ add_library(sxc_lib STATIC
 	custom_input.cpp
 	tls.cpp
 	util.cpp
+	queue.cpp
 	${HEADER_LIST}
 )
 
