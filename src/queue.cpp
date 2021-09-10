@@ -4,7 +4,7 @@
  * Push a new message into the deque
  * @param message Message object to push into the inbound deque
  */
-void Queue::Push(const Message & message)
+void Queue::Push(const std::string & message)
 {
   {
     std::unique_lock<std::mutex> lock(m_mutex);
@@ -17,7 +17,7 @@ void Queue::Push(const Message & message)
 /**
  * Pop a new message from the deque if not empty
  */
-Message Queue::Pop()
+std::string Queue::Pop()
 {
   std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -29,7 +29,7 @@ Message Queue::Pop()
     }
   );
 
-  Message message(std::move(m_queue.front()));
+  std::string message(std::move(m_queue.front()));
   m_queue.pop_front();
   return message;
 }

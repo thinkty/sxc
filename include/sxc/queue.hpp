@@ -1,8 +1,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <sxc/message.hpp>
-
+#include <string>
 #include <mutex>
 #include <deque>
 #include <condition_variable>
@@ -18,12 +17,12 @@ class Queue
 {
 private:
   std::mutex m_mutex;
-  std::deque<Message> m_queue;
+  std::deque<std::string> m_queue;
   std::condition_variable m_signal;
 
 public:
-  void Push(const Message & message);
-  Message Pop();
+  void Push(const std::string & message);
+  std::string Pop();
 };
 
 #endif
