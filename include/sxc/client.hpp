@@ -4,6 +4,7 @@
 #include <sxc/tui.hpp>
 #include <sxc/tls.hpp>
 #include <sxc/util.hpp>
+#include <sxc/queue.hpp>
 
 #include <mutex>
 #include <string>
@@ -27,12 +28,15 @@ enum class Status {
 class Client
 {
 private:
+	boost::asio::io_context m_io_ctx;
 	std::mutex m_mutex;
 	std::string m_host;
 	std::string m_port;
 	std::wstring m_cmd;
 	Status m_status;
 	TUI m_ui;
+	Queue m_inbound;	// Inbound thread receive and display messages
+	Queue m_outbound;	// Outbound thread send messages to the server
 
 	void InitTLSClient();
 	void ParseInput();

@@ -7,7 +7,17 @@ Client::Client()
 	: m_cmd{}
 	, m_ui{&m_cmd}
 	, m_status{Status::init}
+	, m_io_ctx{}
 {
+	// In a separate thread, start reading for new messages from the server
+	std::thread message_handler_t([&]()
+		{
+			std::string message = m_inbound.Pop();
+			// TODO: handle message from server
+		}
+	);
+	message_handler_t.detach();
+
 	// Parse input based on current status when the user presses enters
 	auto on_enter = [this]()
 	{
@@ -178,8 +188,7 @@ void Client::UpdateStatus(const Status & status)
 void Client::InitTLSClient()
 {
 	UpdateStatus(Status::connecting);
-	boost::asio::io_context io_ctx;
-	boost::asio::ip::tcp::resolver resolver(io_ctx);
+	boost::asio::ip::tcp::resolver resolver(m_io_ctx);
 
 	try
 	{
@@ -190,14 +199,14 @@ void Client::InitTLSClient()
 		// Use the certs in the ca-certificates package
 		ssl_ctx.set_default_verify_paths();
 
-		TLSClient client(io_ctx, ssl_ctx, endpoints, m_ui, [&]()
+		TLSClient client(m_io_ctx, ssl_ctx, endpoints, m_ui, m_inbound, m_outbound, [&]()
 			{
 				UpdateStatus(Status::connected);
 			}
 		);
 
 		// The execution blocks the thread
-		io_ctx.run();
+		m_io_ctx.run();
 
 		// Set status back to 'init' on disconnect
 		m_ui.Print("Connection closed");
