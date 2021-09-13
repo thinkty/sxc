@@ -32,6 +32,7 @@ private:
 	std::mutex m_mutex;
 	std::string m_host;
 	std::string m_port;
+	std::string m_id;
 	std::wstring m_cmd;
 	Status m_status;
 	TUI m_ui;

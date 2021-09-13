@@ -112,9 +112,10 @@ void Client::HandleInitStatus()
 			m_port = std::string(cmds[2].begin(), cmds[2].end());
 		}
 
-		// Connect to xmpp server
-		std::thread tls_client(& Client::InitTLSClient, this);
-		tls_client.detach();
+		UpdateStatus(Status::connecting);
+
+		// Prompt for user-id to be used on the XMPP server
+		m_ui.Print("Enter the id for the XMPP server");
 	}
 	else
 	{
@@ -128,7 +129,19 @@ void Client::HandleInitStatus()
  */
 void Client::HandleConnectingStatus()
 {
-	m_ui.Print("Please wait while connecting");
+	// Take user id if not occupied already
+	if (m_id.empty())
+	{
+		m_ui.Print(L"> " + m_cmd);
+		auto cmds = Util::Split(m_cmd);
+
+		// TODO: ID format verification
+		m_id = std::string(cmds[0].begin(), cmds[0].end());
+
+		// Connect to xmpp server
+		std::thread tls_client(& Client::InitTLSClient, this);
+		tls_client.detach();
+	}
 }
 
 /**
@@ -187,7 +200,6 @@ void Client::UpdateStatus(const Status & status)
  */
 void Client::InitTLSClient()
 {
-	UpdateStatus(Status::connecting);
 	boost::asio::ip::tcp::resolver resolver(m_io_ctx);
 
 	try
@@ -211,6 +223,9 @@ void Client::InitTLSClient()
 		// Set status back to 'init' on disconnect
 		m_ui.Print("Connection closed");
 		UpdateStatus(Status::init);
+
+		// Reset user id
+		m_id.erase();
 	}
 	catch (const std::exception & e)
 	{
