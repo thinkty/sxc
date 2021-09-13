@@ -140,14 +140,18 @@ TLSClient::TLSClient(
   TUI & ui,
   Queue & inbound,
   Queue & outbound,
+  std::string & id,
   callback_t on_connect
 )
   : m_socket{io_context, ssl_context}
   , m_ui{ui}
   , m_inbound{inbound}
   , m_outbound{outbound}
+  , m_id{id}
 {
   m_on_connect = std::move(on_connect);
+
+  m_ui.Print("ID: " + m_id);
 
   m_socket.set_verify_mode(boost::asio::ssl::verify_peer);
   m_socket.set_verify_callback(

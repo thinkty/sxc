@@ -71,6 +71,7 @@ private:
   TUI & m_ui;
   Queue & m_inbound;
   Queue & m_outbound;
+  std::string & m_id;
   callback_t m_on_connect;
   streambuf_t m_req;
   streambuf_t m_res;
@@ -89,6 +90,7 @@ public:
     TUI & ui,
     Queue & inbound,
     Queue & outbound,
+    std::string & id,
     callback_t m_on_connect
   );
 };

@@ -211,7 +211,15 @@ void Client::InitTLSClient()
 		// Use the certs in the ca-certificates package
 		ssl_ctx.set_default_verify_paths();
 
-		TLSClient client(m_io_ctx, ssl_ctx, endpoints, m_ui, m_inbound, m_outbound, [&]()
+		TLSClient client(
+			m_io_ctx,
+			ssl_ctx,
+			endpoints,
+			m_ui,
+			m_inbound,
+			m_outbound,
+			m_id,
+			[&]()
 			{
 				UpdateStatus(Status::connected);
 			}
